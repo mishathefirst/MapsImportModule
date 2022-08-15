@@ -26,6 +26,8 @@ import java.nio.charset.StandardCharsets;
 @Controller
 public class MapsController {
 
+    private static String Query1BasicURL = "https://demo.maps.mail.ru/v3/search?api_key=demo&q=";
+
     @GetMapping("")
     public ResponseEntity<StringBuilder> getListOfNearbyInfrastructure(@RequestParam("address") String address) {
 
@@ -33,7 +35,7 @@ public class MapsController {
         StringBuilder content = new StringBuilder();
         //query 1
         try {
-            URL url = new URL("https://demo.maps.mail.ru/v3/search?api_key=demo&q=" + address);
+            URL url = new URL(Query1BasicURL + address);
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setConnectTimeout(10000);
@@ -64,13 +66,13 @@ public class MapsController {
 
 
         //timeout 1
+        //caused by free version of the maps platform limitations
         long start = System.currentTimeMillis();
         long end = start + 20 * 1000;
         int someNumber = 0;
         while (System.currentTimeMillis() < end) {
             someNumber += 1;
         }
-
 
 
 
