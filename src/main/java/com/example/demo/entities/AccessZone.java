@@ -5,19 +5,20 @@ import java.util.HashMap;
 public class AccessZone {
     public HashMap<MeanOfTransport, Double> transportMap = new HashMap<>(3);
 
-    public void initialiseZone() {
-        transportMap.put(MeanOfTransport.DEFAULT, 0.0);
-        transportMap.put(MeanOfTransport.PUBLIC_TRANSPORT, 0.0);
-        transportMap.put(MeanOfTransport.CAR, 0.0);
+    public void initialiseZone(Double PedestrianDistance, Double PublicTransportDistance, Double CarDistance) {
+        transportMap.put(MeanOfTransport.PEDESTRIAN, PedestrianDistance);
+        transportMap.put(MeanOfTransport.PUBLIC_TRANSPORT, PublicTransportDistance);
+        transportMap.put(MeanOfTransport.CAR, CarDistance);
     }
 
-
-
+    public HashMap<MeanOfTransport, Double> getTransportMap() {
+        return transportMap;
+    }
 
 }
 
 enum MeanOfTransport {
-    DEFAULT,
+    PEDESTRIAN,
     PUBLIC_TRANSPORT,
     CAR
 }

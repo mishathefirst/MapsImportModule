@@ -26,16 +26,34 @@ import java.nio.charset.StandardCharsets;
 @Controller
 public class MapsController {
 
-    private static String Query1BasicURL = "https://demo.maps.mail.ru/v3/search?api_key=demo&q=";
 
     @GetMapping("")
     public ResponseEntity<StringBuilder> getListOfNearbyInfrastructure(@RequestParam("address") String address) {
-
-
         StringBuilder content = new StringBuilder();
+
         //query 1
+        //getting object's coordinates
+        String locationData = runFirstQuery(address, content);
+
+
+        //query 2
+        //getting access zones
+        runSecondQuery(address, locationData, content);
+
+
+
+        //query 3
+        //getting objects in the corresponding access zones
+        runThirdQuery(content);
+
+        return new ResponseEntity<>(content, HttpStatus.OK);
+
+    }
+
+    private String runFirstQuery(String address, StringBuilder content) {
+        final String QUERY1_BASIC_URL = "https://demo.maps.mail.ru/v3/search?api_key=demo&q=";
         try {
-            URL url = new URL(Query1BasicURL + address);
+            URL url = new URL(QUERY1_BASIC_URL + address);
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setConnectTimeout(10000);
@@ -75,21 +93,23 @@ public class MapsController {
         }
 
 
+        return locationData;
+    }
 
-        //query 2
+    private void runSecondQuery(String address, String locationData, StringBuilder content) {
+
+        final String QUERY2BASICURL = "https://demo.maps.mail.ru/v2/iso?api_key=demo";
+
         try{
             HttpClient httpclient = HttpClients.createDefault();
-            HttpPost httpPost = new HttpPost("https://demo.maps.mail.ru/v2/iso?api_key=demo");
+            HttpPost httpPost = new HttpPost(QUERY2BASICURL);
 
             String[] coordinates = locationData.split(",");
             String jsonOutputString = "{\"locations\":[{\"lat\":" + coordinates[0] + ",\"lon\":" + coordinates[1] + "}],\"costing\":\"pedestrian\",\"contours\":[{\"time\":15}]}";
 
-            //List<NameValuePair> params = new ArrayList<NameValuePair>(2);
-            //params.add(new BasicNameValuePair("Accept", "application/json"));
-            //params.add(new BasicNameValuePair("Content-Type", "application/json"));
             httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-Type", "application/json");
-            //httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
+
             StringEntity stringEntity = new StringEntity(jsonOutputString);
             httpPost.setEntity(stringEntity);
             HttpResponse response = httpclient.execute(httpPost);
@@ -97,15 +117,15 @@ public class MapsController {
 
             byte[] contentBytes;
             if (entity != null) {
-                    InputStream instream = entity.getContent();
-                    contentBytes = new byte[(int) entity.getContentLength()];
-                    instream.read(contentBytes, 0, (int) entity.getContentLength());
-                    String contentStr = new String(contentBytes, StandardCharsets.UTF_8);
-                    System.out.println("_____");
-                    System.out.println(contentStr);
-                    System.out.println("_____");
-                    instream.close();
-                }
+                InputStream instream = entity.getContent();
+                contentBytes = new byte[(int) entity.getContentLength()];
+                instream.read(contentBytes, 0, (int) entity.getContentLength());
+                String contentStr = new String(contentBytes, StandardCharsets.UTF_8);
+                System.out.println("_____");
+                System.out.println(contentStr);
+                System.out.println("_____");
+                instream.close();
+            }
             httpPost.abort();
         }
         catch (IOException e) {
@@ -130,12 +150,13 @@ public class MapsController {
         while (System.currentTimeMillis() < endNew) {
             someNumberNew += 1;
         }
+    }
 
+    private void runThirdQuery(StringBuilder content) {
 
-
+        private final String QUERY3BASICURL =
 
         //change query params in the string
-        //query 3
         try {
             URL url = new URL("https://demo.maps.mail.ru/v3/places?api_key=demo&q=кафе&location=59.936258,30.318024&radius=500");
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
@@ -158,9 +179,6 @@ public class MapsController {
         System.out.println("_____");
         System.out.println(content);
         System.out.println("_____");
-
-        return new ResponseEntity<>(content, HttpStatus.OK);
-
     }
 
 
