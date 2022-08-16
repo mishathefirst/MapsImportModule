@@ -44,7 +44,7 @@ public class MapsController {
 
         //query 3
         //getting objects in the corresponding access zones
-        runThirdQuery(content);
+        runThirdQuery(locationData, content);
 
         return new ResponseEntity<>(content, HttpStatus.OK);
 
@@ -137,6 +137,7 @@ public class MapsController {
         String[] locationArray = new String[2];
         locationArray = locationData.split(",");
         MainObject mainObject = new MainObject(address, Float.parseFloat(locationArray[0]), Float.parseFloat(locationArray[1]));
+        //add coordinates to mainObject
 
 
         content.delete(0, content.length());
@@ -152,13 +153,18 @@ public class MapsController {
         }
     }
 
-    private void runThirdQuery(StringBuilder content) {
+    private void runThirdQuery(String locationData, StringBuilder content) {
 
-        private final String QUERY3BASICURL =
+        final String QUERY3BASICURL = "https://demo.maps.mail.ru/v3/places?api_key=demo&q=";
 
         //change query params in the string
         try {
-            URL url = new URL("https://demo.maps.mail.ru/v3/places?api_key=demo&q=кафе&location=59.936258,30.318024&radius=500");
+            //implement objects variety
+            String objectType = "кафе";
+
+            String[] coordinates = locationData.split(",");
+
+            URL url = new URL(QUERY3BASICURL + objectType + "&location=" + coordinates[1] + "," + coordinates[0] + "&radius=" + convertCoordinatesToRadius());
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setConnectTimeout(10000);
