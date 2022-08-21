@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import com.example.demo.entities.Coordinates;
 import com.example.demo.entities.MainObject;
 
 import org.apache.http.HttpEntity;
@@ -204,10 +205,22 @@ public class MapsController {
 
     //approximate distance based on coordinates
     public double convertCoordinatesToRadius (String locationData, String geometryCoordinates) {
+
+        //approx distance on Earth of one degree
+        final int ANGLE_DISTANCE = 111139;
+
         double distance;
         double[] distances = new double[4], distanceLong = new double[4], distanceLat = new double[4];
+        String[] basicCoordinatesString = locationData.split(",");
+        double[] basicCoordinates = new double[2];
+        basicCoordinates[0] = Double.parseDouble(basicCoordinatesString[1]);
+        basicCoordinates[1] = Double.parseDouble(basicCoordinatesString[0]);
 
-
+        String[] rangeCoordinatesString = geometryCoordinates.split(",");
+        Coordinates[] rangeCoordinates = new Coordinates[4];
+        for (int i = 0; i < 4; i++) {
+            rangeCoordinatesString
+        }
 
         for (int i = 0; i < 4; i++) {
             distances[i] = Math.sqrt(Math.pow(distanceLong[i], 2) + Math.pow(distanceLat[i], 2));
