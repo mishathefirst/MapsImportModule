@@ -38,13 +38,13 @@ public class MapsController {
 
         //query 2
         //getting access zones
-        runSecondQuery(address, locationData, content);
+        String geometryCoordinates = runSecondQuery(address, locationData, content);
 
 
 
         //query 3
         //getting objects in the corresponding access zones
-        runThirdQuery(locationData, content);
+        runThirdQuery(locationData, content, geometryCoordinates);
 
         return new ResponseEntity<>(content, HttpStatus.OK);
 
@@ -96,15 +96,19 @@ public class MapsController {
         return locationData;
     }
 
-    private void runSecondQuery(String address, String locationData, StringBuilder content) {
+    private String runSecondQuery(String address, String locationData, StringBuilder content) {
 
         final String QUERY2BASICURL = "https://demo.maps.mail.ru/v2/iso?api_key=demo";
+        StringBuilder geometryCoordinates = new StringBuilder();
 
         try{
             HttpClient httpclient = HttpClients.createDefault();
             HttpPost httpPost = new HttpPost(QUERY2BASICURL);
 
             String[] coordinates = locationData.split(",");
+
+
+            //change costing
             String jsonOutputString = "{\"locations\":[{\"lat\":" + coordinates[0] + ",\"lon\":" + coordinates[1] + "}],\"costing\":\"pedestrian\",\"contours\":[{\"time\":15}]}";
 
             httpPost.setHeader("Accept", "application/json");
@@ -116,14 +120,18 @@ public class MapsController {
             HttpEntity entity = response.getEntity();
 
             byte[] contentBytes;
+            String contentStr;
             if (entity != null) {
                 InputStream instream = entity.getContent();
                 contentBytes = new byte[(int) entity.getContentLength()];
                 instream.read(contentBytes, 0, (int) entity.getContentLength());
-                String contentStr = new String(contentBytes, StandardCharsets.UTF_8);
+                contentStr = new String(contentBytes, StandardCharsets.UTF_8);
                 System.out.println("_____");
                 System.out.println(contentStr);
                 System.out.println("_____");
+
+                geometryCoordinates = new StringBuilder(contentStr.substring(contentStr.indexOf("coordinates") + 14, contentStr.indexOf("],\"type\"")));
+
                 instream.close();
             }
             httpPost.abort();
@@ -131,6 +139,9 @@ public class MapsController {
         catch (IOException e) {
             e.printStackTrace();
         }
+
+
+
 
 
 
@@ -151,9 +162,11 @@ public class MapsController {
         while (System.currentTimeMillis() < endNew) {
             someNumberNew += 1;
         }
+        System.out.println(geometryCoordinates.toString());
+        return geometryCoordinates.toString();
     }
 
-    private void runThirdQuery(String locationData, StringBuilder content) {
+    private void runThirdQuery(String locationData, StringBuilder content, String geometryCoordinates) {
 
         final String QUERY3BASICURL = "https://demo.maps.mail.ru/v3/places?api_key=demo&q=";
 
@@ -164,7 +177,7 @@ public class MapsController {
 
             String[] coordinates = locationData.split(",");
 
-            URL url = new URL(QUERY3BASICURL + objectType + "&location=" + coordinates[1] + "," + coordinates[0] + "&radius=" + convertCoordinatesToRadius());
+            URL url = new URL(QUERY3BASICURL + objectType + "&location=" + coordinates[1] + "," + coordinates[0] + "&radius=" + convertCoordinatesToRadius(locationData, geometryCoordinates));
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setConnectTimeout(10000);
@@ -189,8 +202,18 @@ public class MapsController {
 
 
 
-    public int convertCoordinatesToRadius () {
-        
+    //approximate distance based on coordinates
+    public double convertCoordinatesToRadius (String locationData, String geometryCoordinates) {
+        double distance;
+        double[] distances = new double[4], distanceLong = new double[4], distanceLat = new double[4];
+
+
+
+        for (int i = 0; i < 4; i++) {
+            distances[i] = Math.sqrt(Math.pow(distanceLong[i], 2) + Math.pow(distanceLat[i], 2));
+        }
+        distance = (distances[0] + distances[1] + distances[2] + distances[3]) / 4;
+        return distance;
     }
 
 }
