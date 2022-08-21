@@ -216,11 +216,18 @@ public class MapsController {
         basicCoordinates[0] = Double.parseDouble(basicCoordinatesString[1]);
         basicCoordinates[1] = Double.parseDouble(basicCoordinatesString[0]);
 
-        String[] rangeCoordinatesString = geometryCoordinates.split(",");
+        String[] rangeCoordinatesString = geometryCoordinates.split("],");
         Coordinates[] rangeCoordinates = new Coordinates[4];
         for (int i = 0; i < 4; i++) {
-            rangeCoordinatesString
+            String[] localCoordinatesArray = rangeCoordinatesString[i].split(",");
+            localCoordinatesArray[0] = localCoordinatesArray[0].substring(1, localCoordinatesArray[0].length() + 1);
+
+            //TODO: check the correctness of the coordinates order
+            rangeCoordinates[i].setLongitude(Double.parseDouble(localCoordinatesArray[0]));
+            rangeCoordinates[i].setLatitude(Double.parseDouble(localCoordinatesArray[1]));
         }
+
+
 
         for (int i = 0; i < 4; i++) {
             distances[i] = Math.sqrt(Math.pow(distanceLong[i], 2) + Math.pow(distanceLat[i], 2));
