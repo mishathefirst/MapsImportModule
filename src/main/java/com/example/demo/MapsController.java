@@ -205,7 +205,7 @@ public class MapsController {
 
     //approximate distance based on coordinates
     public double convertCoordinatesToRadius (String locationData, String geometryCoordinates) {
-
+        //TODO: do with different means of transport
         //approx distance on Earth of one degree
         final int ANGLE_DISTANCE = 111139;
 
@@ -227,7 +227,11 @@ public class MapsController {
             rangeCoordinates[i].setLatitude(Double.parseDouble(localCoordinatesArray[1]));
         }
 
-
+        //TODO: check the correctness of the coordinates order
+        for (int i = 0; i < 4; i++) {
+            distanceLong[i] = Math.abs(rangeCoordinates[i].getLongitude() - basicCoordinates[0]) * ANGLE_DISTANCE;
+            distanceLat[i] = Math.abs(rangeCoordinates[i].getLatitude() - basicCoordinates[1]) * ANGLE_DISTANCE;
+        }
 
         for (int i = 0; i < 4; i++) {
             distances[i] = Math.sqrt(Math.pow(distanceLong[i], 2) + Math.pow(distanceLat[i], 2));
