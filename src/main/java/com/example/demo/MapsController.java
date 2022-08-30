@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import com.example.demo.entities.AccessObjects;
 import com.example.demo.entities.Coordinates;
 import com.example.demo.entities.MainObject;
 
@@ -21,7 +22,7 @@ import java.io.*;
 import java.net.URL;
 
 import java.nio.charset.StandardCharsets;
-
+import java.util.Arrays;
 
 
 @Controller
@@ -175,6 +176,7 @@ public class MapsController {
         try {
             //implement objects variety
             String objectType = "кафе";
+            //String[] accessObjects = AccessObjects.values();
 
             String[] coordinates = locationData.split(",");
 
