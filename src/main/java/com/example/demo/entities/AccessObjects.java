@@ -7,7 +7,15 @@ public enum AccessObjects {
     PARK,
     SCHOOL,
     KINDERGARTEN,
-    SHOP;
+    SHOP,
+    BEACH,
+    HOSPITAL,
+    CLINIC,
+    BANK,
+    GROCERY,
+    STADIUM,
+    SWIMMING_POOL,
+    CHILDREN_PLAYGROUND;
 
 
 }
