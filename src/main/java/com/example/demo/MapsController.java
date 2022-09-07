@@ -179,7 +179,7 @@ public class MapsController {
 
             String[] coordinates = locationData.split(",");
 
-            URL url = new URL(QUERY3BASICURL + objectType + "&location=" + coordinates[1] + "," + coordinates[0] + "&radius=" + convertCoordinatesToRadius(locationData, geometryCoordinates));
+            URL url = new URL(QUERY3BASICURL + objectType + "&location=" + coordinates[1] + "," + coordinates[0] + "&radius=" + (int)convertCoordinatesToRadius(locationData, geometryCoordinates));
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setConnectTimeout(10000);
@@ -223,8 +223,15 @@ public class MapsController {
             String[] localCoordinatesArray = rangeCoordinatesString[i].split(",");
             System.out.println(localCoordinatesArray[0] + ":::" + localCoordinatesArray[1]);
             localCoordinatesArray[0] = localCoordinatesArray[0].substring(1, localCoordinatesArray[0].length());
+            if (i == 3) {
+                localCoordinatesArray[1] = localCoordinatesArray[1].substring(0, localCoordinatesArray[0].length() - 1);
+            }
 
+
+
+            System.out.println(localCoordinatesArray[0]);
             //TODO: check the correctness of the coordinates order
+            rangeCoordinates[i] = new Coordinates();
             rangeCoordinates[i].setLongitude(Double.parseDouble(localCoordinatesArray[0]));
             rangeCoordinates[i].setLatitude(Double.parseDouble(localCoordinatesArray[1]));
         }
