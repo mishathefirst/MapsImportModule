@@ -205,6 +205,46 @@ public class MapsController {
 
     //approximate distance based on coordinates
     public double convertCoordinatesToRadius (String locationData, String geometryCoordinates) {
+        //TODO: do with different means of transport
+        //approx distance on Earth of one degree
+        final int ANGLE_DISTANCE = 111139;
+
+        double distance;
+        double[] distances = new double[4], distanceLong = new double[4], distanceLat = new double[4];
+        String[] basicCoordinatesString = locationData.split(",");
+        double[] basicCoordinates = new double[2];
+        basicCoordinates[0] = Double.parseDouble(basicCoordinatesString[1]);
+        basicCoordinates[1] = Double.parseDouble(basicCoordinatesString[0]);
+
+        String[] rangeCoordinatesString = geometryCoordinates.split("],");
+        Coordinates[] rangeCoordinates = new Coordinates[4];
+        for (int i = 0; i < 4; i++) {
+            String[] localCoordinatesArray = rangeCoordinatesString[i].split(",");
+            System.out.println(localCoordinatesArray[0] + ":::" + localCoordinatesArray[1]);
+            localCoordinatesArray[0] = localCoordinatesArray[0].substring(1, localCoordinatesArray[0].length());
+
+            //TODO: check the correctness of the coordinates order
+            rangeCoordinates[i].setLongitude(Double.parseDouble(localCoordinatesArray[0]));
+            rangeCoordinates[i].setLatitude(Double.parseDouble(localCoordinatesArray[1]));
+        }
+
+        //TODO: check the correctness of the coordinates order
+        for (int i = 0; i < 4; i++) {
+            distanceLong[i] = Math.abs(rangeCoordinates[i].getLongitude() - basicCoordinates[0]) * ANGLE_DISTANCE;
+            distanceLat[i] = Math.abs(rangeCoordinates[i].getLatitude() - basicCoordinates[1]) * ANGLE_DISTANCE;
+        }
+
+        for (int i = 0; i < 4; i++) {
+            distances[i] = Math.sqrt(Math.pow(distanceLong[i], 2) + Math.pow(distanceLat[i], 2));
+        }
+        distance = (distances[0] + distances[1] + distances[2] + distances[3]) / 4;
+        return distance;
+    }
+
+
+
+    /*
+    public double convertCoordinatesToRadius (String locationData, String geometryCoordinates) {
 
         //approx distance on Earth of one degree
         final int ANGLE_DISTANCE = 111139;
@@ -235,6 +275,8 @@ public class MapsController {
         distance = (distances[0] + distances[1] + distances[2] + distances[3]) / 4;
         return distance;
     }
+
+     */
 
 }
 
