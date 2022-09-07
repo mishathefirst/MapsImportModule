@@ -175,6 +175,7 @@ public class MapsController {
         try {
             //implement objects variety
             String objectType = "кафе";
+            //String[] accessObjects = AccessObjects.values();
 
             String[] coordinates = locationData.split(",");
 
