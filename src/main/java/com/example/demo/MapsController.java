@@ -78,12 +78,6 @@ public class MapsController {
         content.delete(0, content.length());
 
 
-        //В locationData - корректные координаты объекта через запятую без пробела
-        System.out.println("_____");
-        System.out.println(locationData);
-        System.out.println("_____");
-
-
         //timeout 1
         //caused by free version of the maps platform limitations
         long start = System.currentTimeMillis();
@@ -127,9 +121,6 @@ public class MapsController {
                 contentBytes = new byte[(int) entity.getContentLength()];
                 instream.read(contentBytes, 0, (int) entity.getContentLength());
                 contentStr = new String(contentBytes, StandardCharsets.UTF_8);
-                System.out.println("_____");
-                System.out.println(contentStr);
-                System.out.println("_____");
 
                 geometryCoordinates = new StringBuilder(contentStr.substring(contentStr.indexOf("coordinates") + 14, contentStr.indexOf("],\"type\"")));
 
@@ -140,11 +131,6 @@ public class MapsController {
         catch (IOException e) {
             e.printStackTrace();
         }
-
-
-
-
-
 
         String[] locationArray = new String[2];
         locationArray = locationData.split(",");
@@ -163,7 +149,7 @@ public class MapsController {
         while (System.currentTimeMillis() < endNew) {
             someNumberNew += 1;
         }
-        System.out.println(geometryCoordinates.toString());
+
         return geometryCoordinates.toString();
     }
 
@@ -197,9 +183,6 @@ public class MapsController {
             e.printStackTrace();
         }
 
-        System.out.println("_____");
-        System.out.println(content);
-        System.out.println("_____");
     }
 
 
@@ -221,22 +204,19 @@ public class MapsController {
         Coordinates[] rangeCoordinates = new Coordinates[4];
         for (int i = 0; i < 4; i++) {
             String[] localCoordinatesArray = rangeCoordinatesString[i].split(",");
-            System.out.println(localCoordinatesArray[0] + ":::" + localCoordinatesArray[1]);
+
             localCoordinatesArray[0] = localCoordinatesArray[0].substring(1, localCoordinatesArray[0].length());
             if (i == 3) {
                 localCoordinatesArray[1] = localCoordinatesArray[1].substring(0, localCoordinatesArray[0].length() - 1);
             }
 
 
-
-            System.out.println(localCoordinatesArray[0]);
-            //TODO: check the correctness of the coordinates order
             rangeCoordinates[i] = new Coordinates();
             rangeCoordinates[i].setLongitude(Double.parseDouble(localCoordinatesArray[0]));
             rangeCoordinates[i].setLatitude(Double.parseDouble(localCoordinatesArray[1]));
         }
 
-        //TODO: check the correctness of the coordinates order
+
         for (int i = 0; i < 4; i++) {
             distanceLong[i] = Math.abs(rangeCoordinates[i].getLongitude() - basicCoordinates[0]) * ANGLE_DISTANCE;
             distanceLat[i] = Math.abs(rangeCoordinates[i].getLatitude() - basicCoordinates[1]) * ANGLE_DISTANCE;
@@ -248,43 +228,6 @@ public class MapsController {
         distance = (distances[0] + distances[1] + distances[2] + distances[3]) / 4;
         return distance;
     }
-
-
-
-    /*
-    public double convertCoordinatesToRadius (String locationData, String geometryCoordinates) {
-
-        //approx distance on Earth of one degree
-        final int ANGLE_DISTANCE = 111139;
-
-        double distance;
-        double[] distances = new double[4], distanceLong = new double[4], distanceLat = new double[4];
-        String[] basicCoordinatesString = locationData.split(",");
-        double[] basicCoordinates = new double[2];
-        basicCoordinates[0] = Double.parseDouble(basicCoordinatesString[1]);
-        basicCoordinates[1] = Double.parseDouble(basicCoordinatesString[0]);
-
-        String[] rangeCoordinatesString = geometryCoordinates.split("],");
-        Coordinates[] rangeCoordinates = new Coordinates[4];
-        for (int i = 0; i < 4; i++) {
-            String[] localCoordinatesArray = rangeCoordinatesString[i].split(",");
-            localCoordinatesArray[0] = localCoordinatesArray[0].substring(1, localCoordinatesArray[0].length() + 1);
-
-            //TODO: check the correctness of the coordinates order
-            rangeCoordinates[i].setLongitude(Double.parseDouble(localCoordinatesArray[0]));
-            rangeCoordinates[i].setLatitude(Double.parseDouble(localCoordinatesArray[1]));
-        }
-
-
-
-        for (int i = 0; i < 4; i++) {
-            distances[i] = Math.sqrt(Math.pow(distanceLong[i], 2) + Math.pow(distanceLat[i], 2));
-        }
-        distance = (distances[0] + distances[1] + distances[2] + distances[3]) / 4;
-        return distance;
-    }
-
-     */
 
 }
 
